@@ -1,0 +1,220 @@
+to make a django project type the following command to the terminal:
+project_name = is the name of the project
+c1: django-admin startproject project_name
+
+manage.py is for executing commands to our project
+setting.py used to make modifications of how the project will work
+urls.py like a table of content for our project
+
+
+to run the app type the command:
+c2: python manage.py runserver
+
+
+to create an app run this command:
+APP_NAME IS THE NAME OF THE APP
+c3: python manage.py.startapp APP_NAME
+
+point(1)
+To get started go to the views.py file:
+import httpResponse:
+#from django.http import HttpResponse
+
+make a function for the index page
+#def index(request):
+#    return HttpResponse("Hello!")
+
+point(2)
+create a urls.py file in the current directory:
+import path
+#from django.urls import path
+
+import the views.py file
+#from . import views
+
+
+make urlpattern list to hold the paths
+#urlpatterns =[
+#    path('', views.index, name='index')
+#]
+
+
+point(4)
+go top the project directory
+urls.py
+in the path import line also import include
+#from django.urls import include,path
+
+add to the path the app that you are working on
+#urlpatterns = [
+#    path('hello', include('hello.urls')), **************** Here ************
+#    path('admin/', admin.site.urls),
+#]
+
+
+to create a django_session table run this command:
+python manage.py migrate
+
+
+___________________django databases_____________________
+
+create a models:
+a way of create a python class that is going to represent data that is in side a database
+this model is like a way that django is goiund to runn sql commands without us typing the sql commands
+when creating tables and updating tables and everything that a sql commands can do
+steps:
+in the the app there is a file called model.py
+here is where we are going to create a model
+example of a model is:
+
+#from django.db import models
+#
+# # Create your models here.
+# class Flight(models.Model):
+#     origin = models.CharField(max_length=64)
+#     destination = models.CharField(max_length=64)
+#     duration = models.IntegerField()
+
+then to take the changes and apply to the database run the following commands to the terminal:
+#python manage.py makemigrations
+this will make another python file in the migrations folder something like 0001_initial.py
+next we need to apply the migration
+#python manage.py migrate
+this is going to make for me a db.sqlite3 file in my apps folder
+cane check it using the dir com,and if in windows and ls if in cs50 ide
+
+to interact with the web app using the terminal use the following commands:
+1) to start using the django virtual web type =>
+#python manage.py shell
+this will take you to the shell/console of the web app
+
+2) we import the the flight class from the model that wse have just created
+#from flights.models import Flight
+flight = the name of my app
+model = the name of the file
+Flight = the name of the class
+
+3) what now i can do is create a new flight in the shell
+#f = Flight(origin="new york", destination="london", duration=415)
+#f.save()
+the above commands will create a new flight and save in the database
+
+4) we can be able to query the db using the following commands
+#Flight.objects.all()
+#: <QuerySet [<Flight: Flight object (1)>]>
+not really helpful?
+so to make the code display more data go back to the model.py file
+any model can impliment a __str__ function which returns a string rep of that object
+
+this is what am talking about:
+add this bellow the Flight class:
+# def __str__(self):
+#     return f"{self.origin} {self.destination} to {self.duration}"
+
+now if you go back to to terminal app and type the same command check the diff:
+
+#flights = Flight.objects.all()
+#:<QuerySet [<Flight: 1 New york to London>]>
+
+to get the first flight
+#flight = flights.flights.first()
+#flight
+#:<Flight: 1 New york to London>
+
+then to access the values of that first flight
+flight.id => to get the id if the flight
+flight.origin => go get the origin of the flight
+etc
+
+and  also to delete i use:
+#flight.delete()
+#:(1, {'flights.Flight': 1})
+has been deleted
+
+
+To make our table more cool and good design especially with allot of relative data:
+we can can rep our data using ref data design which is very easy in  django
+example:
+# from django.db import models
+#
+# # Create your models here.
+#
+# class Airport(models.Model):
+#     code = models.CharField(max_length=3)
+#     city = models.CharField(max_length=64)
+#
+#     def __str__(self):
+#         return f"{self.city} {self.code}"
+#
+#
+# class Flight(models.Model):
+#     origin = models.ForeignKey(Airport, on_delete=models.CASCADE)
+#     destination = models.CharField(max_length=64)
+#     duration = models.IntegerField()
+#
+#     def __str__(self):
+#         return f"{self.id} {self.origin} to {self.destination}"
+#
+
+Note:
+#models.ForeignKey(Airport, on_delete=models.CASCADE)
+what does this code do?
+ForeignKey() => this code ref the the code in a another class in this case Airport
+on_delete=models.CASCADE => when deleting Flight it will delete both the ref data and the the Flight
+
+after making any changes in the the model.py file run the following commands:
+#python manage.py makemigrations
+#python manage.py migrate
+and our database is up to date
+
+we can append data to the Airport class:
+example:
+>>> jfk = Airport(code="jfk", city="New york")
+>>> jfk.save()
+
+also add data to the the Flight database:
+>>> f = Flight(origin=jfk,destination=lhr,duration=415)
+>>> f.save()
+run some few other commands
+<Flight: 1 New york jfk to London lhr>
+>>> f.origin
+<Airport: New york jfk>
+>>> f.origin.code
+'jfk'
+>>> lhr.arrivals.all()
+<QuerySet [<Flight: 1 New york jfk to London lhr>]>
+>>>
+
+To filter use:
+>>> Airport.objects.filter(city="New york")
+<QuerySet [<Airport: New york jfk>]>
+
+
+if you know that there is a speciphic data in the database:
+can call it by simply:
+Airport.objects.get(city="New york")
+
+
+
+django has a web interface to to manipulate the database
+to use type the command:
+#python manage.py createsuperuser
+
+make the account
+the go to the app admin file:
+and register your model
+example:
+
+# # Register your models here.
+# admin.site.register(Airport)
+# admin.site.register(Flight)
+
+
+
+
+
+
+
+
+
+
